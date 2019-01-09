@@ -1,21 +1,18 @@
 {
 	"data": {
 		"filename": "merged.csv",
+		"test_filename": "merged_test.csv",        
 		"columns": [
-			"bid",
-            "ask", 
-            "bsize", 
-            "asize",
             "spread",
             "price",
             "size",
             "arrival_rate",
             "Trade",
-            "Buy",
+            "imbalance",
             "mid"
 		],
 		"sequence_length": 50,
-		"train_test_split": 0.80,
+		"train_test_split": 1,
 		"normalise": false
 	},
 	"training": {
