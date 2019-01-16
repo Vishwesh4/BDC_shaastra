@@ -38,7 +38,7 @@ class Model():
 				self.model.add(Dropout(dropout_rate))
 
 		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'])
-
+		self.model.summary()
 		print('[Model] Model Compiled')
 		timer.stop()
 
