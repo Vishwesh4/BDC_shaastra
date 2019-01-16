@@ -28,7 +28,7 @@
 			{
 				"type": "lstm",
 				"neurons": 20,
-				"input_timesteps": 49,
+				"input_timesteps": 50,
 				"input_dim": 7,
 				"return_seq": true
 			},
@@ -53,7 +53,7 @@
 			{
 				"type": "dense",
 				"neurons": 1,
-				"activation": "linear"
+				"activation": "sigmoid"
 			}
 		]
 	}
