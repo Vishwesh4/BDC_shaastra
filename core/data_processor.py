@@ -1,7 +1,8 @@
 import math
 import numpy as np
 import pandas as pd
-
+from sklearn.preprocessing import LabelEncoder
+from keras.utils import np_utils
 class DataLoader():
     """A class for loading and transforming data for the lstm model"""
 
@@ -29,7 +30,8 @@ class DataLoader():
         print(data_windows.shape)
         x = data_windows[:, :,1:]
         y = data_windows[:, -1, [0]]
-        return x,y
+        return x
+    
 
     def get_train_data(self, seq_len, normalise):
         '''
@@ -54,14 +56,22 @@ class DataLoader():
             for b in range(batch_size):
                 if i >= (self.len_train - seq_len):
                     # stop-condition for a smaller final batch if data doesn't divide evenly
-                    yield np.array(x_batch), np.array(y_batch)
+                    yield np.array(x_batch), np.array(self._encoding(y_batch))
                     i = 0
                 x, y = self._next_window(i, seq_len, normalise)
                 x_batch.append(x)
-                y_batch.append(y)
+                y_batch.extend(y)
                 i += 1
-            yield np.array(x_batch), np.array(y_batch)
+            yield np.array(x_batch), np.array(self._encoding(y_batch))
 
+    def _encoding(self,y):
+        encoder = {
+            0: [0,1,0],
+            1: [1,0,0],
+            -1: [0,0,1]
+        }
+        return [encoder[i] for i in y] 
+    
     def _next_window(self, i, seq_len, normalise):
         '''Generates the next data window from the given index location i'''
         window = self.data_train[i:i+seq_len]

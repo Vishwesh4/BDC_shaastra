@@ -7,7 +7,7 @@ from core.utils import Timer
 from keras.layers import Dense, Activation, Dropout, LSTM
 from keras.models import Sequential, load_model
 from keras.callbacks import EarlyStopping, ModelCheckpoint
-
+from keras.utils import np_utils
 class Model():
 	"""A class for an building and inferencing an lstm model"""
 
@@ -37,7 +37,7 @@ class Model():
 			if layer['type'] == 'dropout':
 				self.model.add(Dropout(dropout_rate))
 
-		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'])
+		self.model.compile(loss=configs['model']['loss'], optimizer=configs['model']['optimizer'],metrics =['acc'])
 		self.model.summary()
 		print('[Model] Model Compiled')
 		timer.stop()
@@ -88,10 +88,11 @@ class Model():
 
 	def predict_point_by_point(self, data):
 		#Predict each timestep given the last sequence of true data, in effect only predicting 1 step ahead each time
+		dic = {0:-1,1:0,2:1}
 		print('[Model] Predicting Point-by-Point...')
 		predicted = self.model.predict(data)
-		predicted = np.reshape(predicted, (predicted.size,))
-		return predicted
+		predicted_decoded = [dic[i] for i in np.argmax(predicted,axis=1)]
+		return predicted_decoded
 
 	def predict_sequences_multiple(self, data, window_size, prediction_len):
 		#Predict sequence of 50 steps before shifting prediction run forward by 50 steps
