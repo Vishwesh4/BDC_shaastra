@@ -27,7 +27,6 @@ class DataLoader():
 
         data_windows = np.array(data_windows).astype(float)
         data_windows = self.normalise_windows(data_windows, single_window=False) if normalise else data_windows
-        print(data_windows.shape)
         x = data_windows[:, :,1:]
         y = data_windows[:, -1, [0]]
         return x

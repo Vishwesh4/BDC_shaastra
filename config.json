@@ -28,7 +28,7 @@
 		"layers": [
 			{
 				"type": "lstm",
-				"neurons": 20,
+				"neurons": 30,
 				"input_timesteps": 35,
 				"input_dim": 8,
 				"return_seq": true
@@ -39,12 +39,12 @@
 			},
 			{
 				"type": "lstm",
-				"neurons": 30,
+				"neurons": 40,
 				"return_seq": true
 			},
 			{
 				"type": "lstm",
-				"neurons": 30,
+				"neurons": 40,
 				"return_seq": false
 			},
 			{

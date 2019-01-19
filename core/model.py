@@ -42,29 +42,6 @@ class Model():
 		print('[Model] Model Compiled')
 		timer.stop()
 
-	def train(self, x, y, epochs, batch_size, save_dir):
-		timer = Timer()
-		timer.start()
-		print('[Model] Training Started')
-		print('[Model] %s epochs, %s batch size' % (epochs, batch_size))
-		
-		save_fname = os.path.join(save_dir, '%s-e%s.h5' % (dt.datetime.now().strftime('%d%m%Y-%H%M%S'), str(epochs)))
-		callbacks = [
-			EarlyStopping(monitor='val_loss', patience=2),
-			ModelCheckpoint(filepath=save_fname, monitor='val_loss', save_best_only=True)
-		]
-		self.model.fit(
-			x,
-			y,
-			epochs=epochs,
-			batch_size=batch_size,
-			callbacks=callbacks
-		)
-		self.model.save(save_fname)
-
-		print('[Model] Training Completed. Model saved as %s' % save_fname)
-		timer.stop()
-
 	def train_generator(self, data_gen, epochs, batch_size, steps_per_epoch, save_dir):
 		timer = Timer()
 		timer.start()
@@ -87,63 +64,10 @@ class Model():
 		timer.stop()
 
 	def predict_point_by_point(self, data):
-		#Predict each timestep given the last sequence of true data, in effect only predicting 1 step ahead each time
+		#Predict each timestep given the current and last sequences of true data, in effect only predicting 1 step ahead each time
 		dic = {0:-1,1:0,2:1}
 		print('[Model] Predicting Point-by-Point...')
 		predicted = self.model.predict(data)
 		predicted_decoded = [dic[i] for i in np.argmax(predicted,axis=1)]
 		return predicted_decoded
 
-	def predict_sequences_multiple(self, data, window_size, prediction_len):
-		#Predict sequence of 50 steps before shifting prediction run forward by 50 steps
-		print('[Model] Predicting Sequences Multiple...')
-		prediction_seqs = []
-		for i in range(int(len(data)/prediction_len)):
-			curr_frame = data[i*prediction_len]
-			predicted = []
-			for j in range(prediction_len):
-				predicted.append(self.model.predict(curr_frame[newaxis,:,:])[0,0])
-				curr_frame = curr_frame[1:]
-				curr_frame = np.insert(curr_frame, [window_size-2], predicted[-1], axis=0)      
-			prediction_seqs.append(predicted)
-		return prediction_seqs
-	def predict_at_new_mid_multiple(self,data,window_size,prediction_len,indicies_loc):
-        #Predicts only at new location of mid price
-		print('[Model] Predicting at new mid price...')
-		prediction_seqs = []
-		for i in indicies_loc:
-			curr_frame = data[i]
-			predicted = []
-			for j in range(prediction_len):
-				predicted.append(self.model.predict(curr_frame[newaxis,:,:])[0,0])
-				curr_frame = curr_frame[1:]
-				curr_frame = np.insert(curr_frame, [window_size-2], predicted[-1], axis=0)
-			prediction_seqs.append(predicted)
-		print("Done")    
-		return prediction_seqs
-    
-	def predict_at_new_mid_one(self,data,window_size,prediction_len,loc):
-        #Predicts only at new location of mid price
-		print('[Model] Predicting at new mid price...')
-		prediction_seqs = []
-		# for i in indicies_loc:
-		curr_frame = data[loc]
-		predicted = []
-		for j in range(prediction_len):
-			predicted.append(self.model.predict(curr_frame[newaxis,:,:])[0,0])
-			curr_frame = curr_frame[1:]
-			curr_frame = np.insert(curr_frame, [window_size-2], np.insert(data[loc+1+j,window_size-2,:-1],data.shape[-1]-1,predicted[-1],axis=0), axis=0)
-		prediction_seqs.append(predicted)
-		print("Done")    
-		return prediction_seqs
-    
-	def predict_sequence_full(self, data, window_size):
-		#Shift the window by 1 new prediction each time, re-run predictions on new window
-		print('[Model] Predicting Sequences Full...')
-		curr_frame = data[0]
-		predicted = []
-		for i in range(len(data)):
-			predicted.append(self.model.predict(curr_frame[newaxis,:,:])[0,0])
-			curr_frame = curr_frame[1:]
-			curr_frame = np.insert(curr_frame, [window_size-2], predicted[-1], axis=0)
-		return predicted
