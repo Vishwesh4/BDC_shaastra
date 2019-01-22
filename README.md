@@ -47,6 +47,7 @@ elements represent the probability of each price movement class (tick up, tick d
 time step.
 
 For prediction of predMid, we used:
+
 ![Alttext](https://raw.github.com/Vishwesh4/BDC_Shaastra/master/images/equation_image.png)
 
 ## Labelling
